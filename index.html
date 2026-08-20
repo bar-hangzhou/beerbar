@@ -1,0 +1,783 @@
+<title>小ビールバー</title>
+<style>
+  :root {
+    --bg: #0c0b0a;
+    --surface: #17140f;
+    --surface-2: #201b14;
+    --ink: #eee7da;
+    --ink-dim: #a89d89;
+    --ink-faint: #6f6557;
+    --gold: #b98f45;
+    --gold-bright: #dcb267;
+    --line: #332c22;
+    --font-display: "Hiragino Mincho ProN", "Yu Mincho", "Georgia", serif;
+    --font-body: "Hiragino Kaku Gothic ProN", "Yu Gothic", -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "SF Mono", Menlo, "Yu Gothic", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--gold); color: #100d09; }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 56px);
+  }
+
+  /* ---------- Nav ---------- */
+  header.nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    background: linear-gradient(to bottom, rgba(12,11,10,.92), rgba(12,11,10,0));
+    padding: 22px 0 40px;
+  }
+  .nav-inner {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 56px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-mark {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    letter-spacing: .28em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav-links {
+    display: flex;
+    gap: clamp(16px, 3vw, 34px);
+    list-style: none;
+    margin: 0; padding: 0;
+  }
+  .nav-links a {
+    text-decoration: none;
+    font-size: .78rem;
+    letter-spacing: .18em;
+    color: var(--ink-dim);
+    transition: color .25s ease;
+  }
+  .nav-links a:hover, .nav-links a:focus-visible { color: var(--gold-bright); }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: clamp(48px, 8vh, 96px);
+    overflow: hidden;
+  }
+  #glow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .22em;
+    color: var(--ink-dim);
+    margin: 0 0 28px;
+  }
+  .eyebrow .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gold-bright);
+    box-shadow: 0 0 8px 2px rgba(220, 178, 103, .55);
+  }
+  h1.brand {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(3.4rem, 11vw, 7.2rem);
+    letter-spacing: .05em;
+    margin: 0;
+    line-height: .95;
+    text-wrap: balance;
+    background: linear-gradient(180deg, var(--ink) 0%, var(--ink) 55%, var(--gold-bright) 150%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .tagline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: clamp(1.15rem, 2.4vw, 1.55rem);
+    color: var(--gold-bright);
+    margin: 22px 0 0;
+    max-width: 30ch;
+  }
+  .hero-sub {
+    margin: 14px 0 0;
+    color: var(--ink-dim);
+    font-size: .95rem;
+    max-width: 42ch;
+  }
+  .scroll-cue {
+    position: absolute;
+    right: clamp(20px, 5vw, 56px);
+    bottom: 40px;
+    z-index: 2;
+    writing-mode: vertical-rl;
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .3em;
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .scroll-cue::after {
+    content: "";
+    width: 1px;
+    height: 46px;
+    background: linear-gradient(var(--ink-faint), transparent);
+  }
+
+  /* ---------- Section shell ---------- */
+  section { position: relative; padding: clamp(72px, 12vh, 128px) 0; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: clamp(36px, 6vh, 56px);
+  }
+  .section-num {
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    color: var(--gold);
+    letter-spacing: .1em;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.7rem, 3vw, 2.3rem);
+    font-weight: 400;
+    margin: 0;
+    letter-spacing: .04em;
+  }
+  .section-title small {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .24em;
+    color: var(--ink-faint);
+    margin-top: 8px;
+  }
+  .rule {
+    border: none;
+    height: 1px;
+    background: var(--line);
+    margin: 0 0 clamp(36px, 6vh, 56px);
+  }
+
+  /* ---------- About ---------- */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: clamp(32px, 6vw, 72px);
+    align-items: start;
+  }
+  .about-grid p {
+    color: var(--ink);
+    font-size: 1.02rem;
+    max-width: 58ch;
+    margin: 0 0 1.2em;
+  }
+  .about-grid p:last-child { margin-bottom: 0; }
+  .pull {
+    border-left: 1px solid var(--gold);
+    padding-left: 24px;
+  }
+  .pull .quote {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.5rem;
+    color: var(--gold-bright);
+    margin: 0 0 10px;
+    line-height: 1.4;
+  }
+  .pull .cite {
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .12em;
+    color: var(--ink-faint);
+  }
+  @media (max-width: 720px) {
+    .about-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Menu (tap list) ---------- */
+  ul.tap-list { list-style: none; margin: 0; padding: 0; }
+  .tap-item {
+    display: grid;
+    grid-template-columns: 34px 1fr auto;
+    column-gap: 20px;
+    align-items: start;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .tap-item:first-child { padding-top: 0; }
+  .tap-num {
+    font-family: var(--font-mono);
+    font-size: .8rem;
+    color: var(--gold);
+    padding-top: .2em;
+  }
+  .tap-name {
+    grid-column: 2;
+    font-family: var(--font-display);
+    font-size: 1.08rem;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .tap-meta {
+    grid-column: 2;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: .74rem;
+    letter-spacing: .02em;
+    color: var(--ink-faint);
+  }
+  .tap-price {
+    grid-column: 3;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--gold-bright);
+    font-size: .95rem;
+    white-space: nowrap;
+    padding-top: .2em;
+  }
+  @media (max-width: 620px) {
+    .tap-item { grid-template-columns: 26px 1fr; row-gap: 6px; }
+    .tap-price { grid-column: 2; }
+  }
+
+  /* ---------- Atmosphere ---------- */
+  .atmos {
+    position: relative;
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  #liquid {
+    display: block;
+    width: 100%;
+    height: clamp(260px, 42vw, 420px);
+  }
+  .atmos-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono);
+    font-size: .72rem;
+    letter-spacing: .12em;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- Access ---------- */
+  .access-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .access-card {
+    background: var(--surface);
+    padding: clamp(24px, 3vw, 34px);
+  }
+  .access-card h3 {
+    font-family: var(--font-mono);
+    font-size: .7rem;
+    letter-spacing: .22em;
+    color: var(--gold);
+    margin: 0 0 16px;
+    font-weight: 400;
+  }
+  .access-card p, .access-card dl {
+    margin: 0;
+    font-size: .92rem;
+    color: var(--ink);
+  }
+  .hours-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: .88rem;
+  }
+  .hours-row:last-child { border-bottom: none; }
+  .hours-row span:first-child { color: var(--ink-dim); }
+  .hours-row span:last-child {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  .hours-row.closed span:last-child { color: var(--ink-faint); }
+  @media (max-width: 780px) {
+    .access-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- Footer / CTA ---------- */
+  footer {
+    padding: clamp(80px, 12vh, 120px) 0 48px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+  }
+  .cta-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin: 0 0 28px;
+    text-wrap: balance;
+  }
+  .cta-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 56px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    letter-spacing: .14em;
+    border-radius: 1px;
+    transition: transform .2s ease, background .2s ease, border-color .2s ease;
+  }
+  .btn:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+  .btn-primary {
+    background: var(--gold);
+    color: #14110c;
+  }
+  .btn-primary:hover { background: var(--gold-bright); transform: translateY(-2px); }
+  .btn-ghost {
+    border: 1px solid var(--line);
+    color: var(--ink-dim);
+  }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold-bright); transform: translateY(-2px); }
+  .foot-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: .68rem;
+    letter-spacing: .1em;
+    color: var(--ink-faint);
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* ---------- Reveal ---------- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .8s ease, transform .8s ease;
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .btn:hover, .btn-primary:hover, .btn-ghost:hover { transform: none; }
+  }
+</style>
+
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-mark" href="#top">小</a>
+    <ul class="nav-links">
+      <li><a href="#about">ABOUT</a></li>
+      <li><a href="#menu">MENU</a></li>
+      <li><a href="#food">FOOD</a></li>
+      <li><a href="#atmosphere">SPACE</a></li>
+      <li><a href="#access">ACCESS</a></li>
+    </ul>
+  </div>
+</header>
+
+<div id="top" class="hero">
+  <canvas id="glow"></canvas>
+  <div class="wrap hero-content">
+    <p class="eyebrow"><span class="dot"></span>杭州・浙江省 / OPEN NIGHTLY FROM 20:00</p>
+    <h1 class="brand">小ビールバー</h1>
+    <p class="tagline">一杯からはじまる、杭州の夜。</p>
+    <p class="hero-sub">西湖からほど近い路地裏、カウンターとテーブル席の小さなビアバー。<br>注ぎたての一杯を、気取らずゆっくりと。</p>
+  </div>
+  <div class="scroll-cue">SCROLL</div>
+</div>
+
+<main class="wrap">
+
+  <section id="about">
+    <div class="section-head reveal">
+      <span class="section-num">01</span>
+      <h2 class="section-title">About<small>コンセプト</small></h2>
+    </div>
+    <hr class="rule">
+    <div class="about-grid reveal">
+      <div>
+        <p>小ビールバーは、杭州の街を歩き疲れた一日の終わりに、ふらりと立ち寄れる小さなビアバーです。琥珀色の光の下で、注ぎたての泡がゆっくりと落ち着いていく。会話は自然に、音楽は低く流れています。</p>
+        <p>カウンター8席とテーブル3卓だけの小さな店内。世界のクラフトビールから地元浙江のブルワリーまで、その日おすすめの一杯をゆっくりご案内します。一人でも、友人と囲んでも心地よい広さです。</p>
+      </div>
+      <div class="pull">
+        <p class="quote">「泡は、3分待ってから。」</p>
+        <p class="cite">— 注ぎたての一杯が、一番おいしくなる時間。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="menu">
+    <div class="section-head reveal">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Menu<small>本日のタップリスト・全10種</small></h2>
+    </div>
+    <hr class="rule">
+    <ul class="tap-list reveal">
+      <li class="tap-item">
+        <span class="tap-num">01</span>
+        <span class="tap-name">野鹅望春风 双倍浑浊IPA</span>
+        <span class="tap-meta">Double Hazy IPA・ABV 6.3%・IBU 35・476ml</span>
+        <span class="tap-price">68元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">02</span>
+        <span class="tap-name">无邪狂浪 三倍干投浑浊</span>
+        <span class="tap-meta">Triple Dry-Hopped Hazy IPA・ABV 7.2%・IBU 45・476ml</span>
+        <span class="tap-price">78元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">03</span>
+        <span class="tap-name">有什酸味主义 酸浑浊IPA</span>
+        <span class="tap-meta">Sour Hazy IPA・ABV ≥5.2%・IBU 15・476ml</span>
+        <span class="tap-price">78元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">04</span>
+        <span class="tap-name">洄游 烟熏菠萝牛至西打</span>
+        <span class="tap-meta">Cider（燻製パイナップル・オレガノ）・ABV 4.5%・476ml</span>
+        <span class="tap-price">58元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">05</span>
+        <span class="tap-name">有什毒果 主教帝国西打</span>
+        <span class="tap-meta">Imperial Cider・ABV &gt;8.2%・330ml</span>
+        <span class="tap-price">68元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">06</span>
+        <span class="tap-name">九门听涛 帝国世涛</span>
+        <span class="tap-meta">Imperial Stout・ABV 10%・IBU 20・476ml</span>
+        <span class="tap-price">78元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">07</span>
+        <span class="tap-name">大九就酱 PLUS</span>
+        <span class="tap-meta">ABV &gt;10%・476ml</span>
+        <span class="tap-price">68元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">08</span>
+        <span class="tap-name">大九零糖 超脆皮尔森</span>
+        <span class="tap-meta">Zero Sugar Crisp Pilsner・ABV 4.0%・IBU 10・476ml</span>
+        <span class="tap-price">48元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">09</span>
+        <span class="tap-name">经典原浆皮尔森</span>
+        <span class="tap-meta">Classic Unfiltered Pilsner・ABV 5.0%・IBU 15・476ml</span>
+        <span class="tap-price">35元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">10</span>
+        <span class="tap-name">高浓度德式小麦</span>
+        <span class="tap-meta">German Wheat (High Gravity)・ABV 5.0%・IBU 10・476ml</span>
+        <span class="tap-price">40元</span>
+      </li>
+    </ul>
+  </section>
+
+  <section id="food">
+    <div class="section-head reveal">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Food<small>おつまみ・全12種</small></h2>
+    </div>
+    <hr class="rule">
+    <ul class="tap-list reveal">
+      <li class="tap-item">
+        <span class="tap-num">01</span>
+        <span class="tap-name">凉拌黄瓜海蜇</span>
+        <span class="tap-meta">きゅうりとクラゲの冷菜</span>
+        <span class="tap-price">18元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">02</span>
+        <span class="tap-name">盐水花生毛豆</span>
+        <span class="tap-meta">塩茹で落花生と枝豆</span>
+        <span class="tap-price">8元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">03</span>
+        <span class="tap-name">温州牛肉干</span>
+        <span class="tap-meta">温州風牛肉ジャーキー</span>
+        <span class="tap-price">68元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">04</span>
+        <span class="tap-name">多味花生</span>
+        <span class="tap-meta">五香落花生</span>
+        <span class="tap-price">15元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">05</span>
+        <span class="tap-name">烤鱼片</span>
+        <span class="tap-meta">炙り魚の薄切り</span>
+        <span class="tap-price">28元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">06</span>
+        <span class="tap-name">怪味胡豆</span>
+        <span class="tap-meta">怪味風味そら豆</span>
+        <span class="tap-price">15元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">07</span>
+        <span class="tap-name">鱿鱼丝</span>
+        <span class="tap-meta">イカの細切り</span>
+        <span class="tap-price">28元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">08</span>
+        <span class="tap-name">烤鱿鱼条</span>
+        <span class="tap-meta">炙りイカ</span>
+        <span class="tap-price">38元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">09</span>
+        <span class="tap-name">芥末黄瓜</span>
+        <span class="tap-meta">辛子風味きゅうり</span>
+        <span class="tap-price">15元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">10</span>
+        <span class="tap-name">麻辣风干鸡胸肉</span>
+        <span class="tap-meta">麻辣ドライ鶏胸肉</span>
+        <span class="tap-price">38元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">11</span>
+        <span class="tap-name">脱脂五香花生米</span>
+        <span class="tap-meta">五香落花生（脱脂）</span>
+        <span class="tap-price">13元</span>
+      </li>
+      <li class="tap-item">
+        <span class="tap-num">12</span>
+        <span class="tap-name">菊花香瓜子</span>
+        <span class="tap-meta">菊花風味ひまわりの種</span>
+        <span class="tap-price">10元</span>
+      </li>
+    </ul>
+  </section>
+
+  <section id="atmosphere">
+    <div class="section-head reveal">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Space<small>店内の空気</small></h2>
+    </div>
+    <hr class="rule">
+    <div class="atmos reveal">
+      <canvas id="liquid"></canvas>
+      <div class="atmos-caption">
+        <span>COUNTER 8 &amp; TABLE SEATS</span>
+        <span>DRAFT POURED FRESH EVERY NIGHT</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="access">
+    <div class="section-head reveal">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Access<small>営業時間・所在地</small></h2>
+    </div>
+    <hr class="rule">
+    <div class="access-grid reveal">
+      <div class="access-card">
+        <h3>HOURS</h3>
+        <div class="hours-row"><span>火 – 木</span><span>20:00 – 24:00</span></div>
+        <div class="hours-row"><span>金 – 土</span><span>20:00 – 02:00</span></div>
+        <div class="hours-row"><span>日</span><span>20:00 – 23:00</span></div>
+        <div class="hours-row closed"><span>月</span><span>定休日</span></div>
+      </div>
+      <div class="access-card">
+        <h3>LOCATION</h3>
+        <p>中国 浙江省杭州市上城区<br>南山路178号<br><br>西湖 徒歩8分 / 地下鉄1号線 龍翔橋駅</p>
+      </div>
+      <div class="access-card">
+        <h3>CONTACT</h3>
+        <p>+86 571-1234-5678<br><br>WeChat: xiao_beer_bar</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  <p class="cta-title reveal">今夜、一杯どうですか？</p>
+  <div class="cta-row reveal">
+    <a class="btn btn-primary" href="tel:+8657112345678">お電話でのお問い合わせ</a>
+    <a class="btn btn-ghost" href="#access">アクセスを見る</a>
+  </div>
+  <div class="foot-meta reveal">
+    <span>小ビールバー — HANGZHOU, CHINA</span>
+    <span>© 2026</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ---- Hero ambient glow ----
+    var glowCanvas = document.getElementById("glow");
+    var gctx = glowCanvas.getContext("2d");
+    var hero = document.querySelector(".hero");
+
+    function sizeGlow() {
+      glowCanvas.width = hero.clientWidth * devicePixelRatio;
+      glowCanvas.height = hero.clientHeight * devicePixelRatio;
+    }
+    sizeGlow();
+    window.addEventListener("resize", sizeGlow);
+
+    function drawGlow(t) {
+      var w = glowCanvas.width, h = glowCanvas.height;
+      gctx.clearRect(0, 0, w, h);
+      gctx.fillStyle = "#0c0b0a";
+      gctx.fillRect(0, 0, w, h);
+
+      var spots = [
+        { bx: 0.22, by: 0.35, r: 0.55, c: "184,140,68" },
+        { bx: 0.78, by: 0.15, r: 0.42, c: "150,110,50" },
+        { bx: 0.5, by: 0.85, r: 0.6, c: "90,70,40" }
+      ];
+
+      spots.forEach(function (s, i) {
+        var phase = reduce ? 0 : t * 0.00006 + i * 2;
+        var x = (s.bx + Math.sin(phase) * 0.04) * w;
+        var y = (s.by + Math.cos(phase * 0.8) * 0.03) * h;
+        var r = s.r * Math.max(w, h);
+        var g = gctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, "rgba(" + s.c + ",0.22)");
+        g.addColorStop(1, "rgba(" + s.c + ",0)");
+        gctx.fillStyle = g;
+        gctx.fillRect(0, 0, w, h);
+      });
+
+      var vg = gctx.createRadialGradient(w * 0.5, h * 0.9, 0, w * 0.5, h * 0.9, h * 1.1);
+      vg.addColorStop(0, "rgba(0,0,0,0)");
+      vg.addColorStop(1, "rgba(0,0,0,0.55)");
+      gctx.fillStyle = vg;
+      gctx.fillRect(0, 0, w, h);
+
+      if (!reduce) requestAnimationFrame(drawGlow);
+    }
+    requestAnimationFrame(drawGlow);
+
+    // ---- Liquid / light refraction panel ----
+    var liquidCanvas = document.getElementById("liquid");
+    var lctx = liquidCanvas.getContext("2d");
+    var atmos = document.querySelector(".atmos");
+
+    function sizeLiquid() {
+      var rect = liquidCanvas.getBoundingClientRect();
+      liquidCanvas.width = rect.width * devicePixelRatio;
+      liquidCanvas.height = rect.height * devicePixelRatio;
+    }
+    sizeLiquid();
+    window.addEventListener("resize", sizeLiquid);
+
+    function drawLiquid(t) {
+      var w = liquidCanvas.width, h = liquidCanvas.height;
+      lctx.fillStyle = "#17140f";
+      lctx.fillRect(0, 0, w, h);
+
+      var bands = 5;
+      for (var i = 0; i < bands; i++) {
+        var phase = reduce ? 0 : t * 0.00004 + i * 1.3;
+        var yBase = h * (0.15 + i * (0.7 / bands));
+        lctx.beginPath();
+        lctx.moveTo(0, yBase);
+        for (var x = 0; x <= w; x += w / 40) {
+          var y = yBase + Math.sin(x * 0.006 + phase) * (h * 0.02) + Math.sin(x * 0.002 - phase * 0.6) * (h * 0.015);
+          lctx.lineTo(x, y);
+        }
+        lctx.lineTo(w, h);
+        lctx.lineTo(0, h);
+        lctx.closePath();
+        var alpha = 0.05 + (i / bands) * 0.05;
+        lctx.fillStyle = "rgba(185,143,69," + alpha.toFixed(3) + ")";
+        lctx.fill();
+      }
+
+      var g = lctx.createRadialGradient(w * 0.7, h * 0.25, 0, w * 0.7, h * 0.25, w * 0.5);
+      g.addColorStop(0, "rgba(220,178,103,0.14)");
+      g.addColorStop(1, "rgba(220,178,103,0)");
+      lctx.fillStyle = g;
+      lctx.fillRect(0, 0, w, h);
+
+      if (!reduce) requestAnimationFrame(drawLiquid);
+    }
+    requestAnimationFrame(drawLiquid);
+
+    // ---- Reveal on scroll ----
+    var targets = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window && !reduce) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add("in");
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      targets.forEach(function (el) { io.observe(el); });
+    } else {
+      targets.forEach(function (el) { el.classList.add("in"); });
+    }
+  })();
+</script>
